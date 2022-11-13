@@ -39,7 +39,7 @@ def compute_differences(integrals_approx: Dict[str, List[float]],
                         integral_exact: Dict[str, List[float]]) -> Dict[str, List[float]]:
     integrals_diffs = {}
     for integral in integrals_approx:
-        integrals_diffs[f'{integral} {diff_labels["abs"]}'] = [(integ_approx - integral_exact[exact_method][0])
+        integrals_diffs[f'{integral} {diff_labels["abs"]}'] = [abs(integ_approx - integral_exact[exact_method][0])
                                                                for integ_approx
                                                                in integrals_approx[integral]]
 
@@ -51,11 +51,11 @@ def compute_differences(integrals_approx: Dict[str, List[float]],
 
 
 def find_method_max_diff(integrals_approx: Dict[str, List[float]], integrals_diffs: Dict[str, List[float]]) -> str:
-    rel_max_diff = -1
+    abs_max_diff = -1
     method_max_diff = ''
     for integral in integrals_approx:
-        if integrals_diffs[f'{integral} {diff_labels["rel"]}'][-1] > rel_max_diff:
-            rel_max_diff = integrals_diffs[f'{integral} {diff_labels["rel"]}'][-1]
+        if integrals_diffs[f'{integral} {diff_labels["rel"]}'][-1] > abs_max_diff:
+            abs_max_diff = integrals_diffs[f'{integral} {diff_labels["rel"]}'][-1]
             method_max_diff = f'{integral}'
 
     return method_max_diff
