@@ -51,7 +51,7 @@ def compute_differences(integrals_approx: Dict[str, List[float]],
 
 
 def find_method_max_diff(integrals_approx: Dict[str, List[float]], integrals_diffs: Dict[str, List[float]]) -> str:
-    rel_max_diff = 0
+    rel_max_diff = -1
     method_max_diff = ''
     for integral in integrals_approx:
         if integrals_diffs[f'{integral} {diff_labels["rel"]}'][-1] > rel_max_diff:
