@@ -1,3 +1,8 @@
+"""
+Шаблоны для задания кривых и функции их обработки
+"""
+
+
 from typing import Callable
 
 
@@ -12,7 +17,7 @@ class Curve:
 
 class CurveSeg(Curve):
     """
-    Класс, который описывает сегмент кривой по её левой и правой границы
+    Класс, который уточняет сегмент кривой по её левой и правой границы
     """
     def __init__(self, function: Callable, antiderivative: Callable, left_bound: float, right_bound: float):
         super().__init__(function, antiderivative)
@@ -21,20 +26,24 @@ class CurveSeg(Curve):
 
 
 def integrate(curve_seg: CurveSeg) -> float:
+    """
+    Вычисляет площадь по графиком кривой
+    :param curve_seg:
+    :return:
+    """
     return curve_seg.antideriv(x=curve_seg.right_bound) - curve_seg.antideriv(x=curve_seg.left_bound)
 
 
 def integrate_approx(curve_seg: CurveSeg, steps: int, height_computation: Callable) -> float:
-    area = 0
+    average_height = 0
     step_size = (curve_seg.right_bound - curve_seg.left_bound) / steps
 
     pos_left, pos_right = curve_seg.left_bound, None
     for i in range(steps):
-        pos_right = curve_seg.left_bound + step_size * i
+        pos_right = curve_seg.left_bound + step_size * (i + 1)
+        average_height += height_computation(left=pos_left, right=pos_right, sample_height=curve_seg.func)
 
-        height = height_computation(left=pos_left, right=pos_right, sample_height=curve_seg.func)
         pos_left = pos_right
 
-        area += step_size * height
-
+    area = average_height / steps * (curve_seg.right_bound - curve_seg.left_bound)
     return area

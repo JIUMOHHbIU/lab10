@@ -1,4 +1,8 @@
-from math import cos, sin
+"""
+Константы и переменные, заданные пользователем
+"""
+
+
 from typing import Any, Callable
 
 format_out_number = '>12.5g'
@@ -27,13 +31,13 @@ def height_parabol(left: float, right: float, sample_height: Callable):
 def func(**kwargs: [str, Any]) -> float:
     x = kwargs['x']
 
-    return x - cos(x)
+    return x**2 / 2
 
 
 def antideriv(**kwargs: [str, Any]) -> float:
     x = kwargs['x']
 
-    return x**2/2 - sin(x)
+    return x**3 / 6 + 5
 
 
 approximation_methods = {

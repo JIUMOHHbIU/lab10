@@ -1,3 +1,8 @@
+"""
+Способы ввода/вывода данных
+"""
+
+
 from typing import Callable, Any, List, Dict
 
 from settings import format_out_number, name_width, runs, separetor_vr, separetor_hr, separetor_cross
@@ -79,10 +84,15 @@ def replace_cross_separetors(table: str) -> str:
     return table
 
 
-def display_table(dictionaries: List[Dict[str, List[float]]], columns: int) -> None:
+def str_table(dictionaries: List[Dict[str, List[float]]], columns: int) -> str:
     table = str_border(columns)
     for dictionary in dictionaries:
         table += form_output_block(dictionary, columns)
 
     table = replace_cross_separetors(table)
+    return table
+
+
+def display_table(dictionaries: List[Dict[str, List[float]]], columns: int) -> None:
+    table = str_table(dictionaries, columns)
     print(table)

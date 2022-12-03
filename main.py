@@ -1,6 +1,6 @@
 """
 Жиляев Антон ИУ7-14Б
-
+Программа находит площадь под графиком кривой, заданной пользователем
 """
 from typing import List, Dict
 
@@ -10,6 +10,11 @@ from settings import func, antideriv, runs, approximation_methods, exact_method,
 
 
 def read_params() -> tuple[float, float, List[int]]:
+    """
+    Обрабатывает ввод параметров интегрирования
+
+    :return: Параметры интегрирования
+    """
     left_bound = get_number(float, 'Введите левую границу интегрирования: ')
     while (right_bound := get_number(float, 'Введите правую границу интегрирования: ')) <= left_bound:
         print('Правая граница должна быть больше левой границы')
@@ -22,6 +27,13 @@ def read_params() -> tuple[float, float, List[int]]:
 
 
 def compute_integrals_approximations(curve_seg: CurveSeg, n: List[int]) -> Dict[str, List[float]]:
+    """
+    Вычисляет площадь под графиком кривой через глобально заданные методы численного интегрирования
+
+    :param curve_seg: Объект, содержащий все данные о свойствах кривой
+    :param n: Список количеств сегментов интегрирования
+    :return: Словарь с указание метода и вычисленными площадями для соответствующих разбиений
+    """
     integral_approx_method_value = {}
     for approx_method in approximation_methods:
         integral_approx_method_value[approx_method] = \
@@ -31,12 +43,25 @@ def compute_integrals_approximations(curve_seg: CurveSeg, n: List[int]) -> Dict[
 
 
 def compute_integral_exact(curve_seg: CurveSeg) -> Dict[str, List[float]]:
+    """
+    Вычисляет площадь под графиком кривой через первообразную функции
+
+    :param curve_seg: Объект, содержащий все данные о свойствах кривой
+    :return: Словарь с указание метода и вычисленными площадями для соответствующих разбиений
+    """
     integral_exact = {exact_method: [integrate(curve_seg)]}
     return integral_exact
 
 
 def compute_differences(integrals_approx: Dict[str, List[float]],
                         integral_exact: Dict[str, List[float]]) -> Dict[str, List[float]]:
+    """
+    Вычисляет относительную и абсолютную погрешность методов численного интегрирования
+
+    :param integrals_approx: Словарь со списками значений для каждого количества участков разбиения с доступом по названию метода приближения
+    :param integral_exact: Точное значение интеграла
+    :return: Словарь с указанием погрешностей для каждого метода и соответствующего количества участков разбиения
+    """
     integrals_diffs = {}
     for integral in integrals_approx:
         integrals_diffs[f'{integral} {diff_labels["abs"]}'] = [abs(integ_approx - integral_exact[exact_method][0])
@@ -51,6 +76,13 @@ def compute_differences(integrals_approx: Dict[str, List[float]],
 
 
 def find_method_max_diff(integrals_approx: Dict[str, List[float]], integrals_diffs: Dict[str, List[float]]) -> str:
+    """
+    Находит метод с самым большим отклонением при одном из указанных форматов разбиения
+
+    :param integrals_approx: Словарь со списками значений для каждого количества участков разбиения с доступом по названию метода приближения
+    :param integrals_diffs: Словарь со списками погрешностей для каждого количества участков разбиения с доступом по названию метода приближения
+    :return:
+    """
     abs_max_diff = -1
     method_max_diff = ''
     for integral in integrals_approx:
@@ -62,6 +94,14 @@ def find_method_max_diff(integrals_approx: Dict[str, List[float]], integrals_dif
 
 
 def compute_ndivisions(curve_seg: CurveSeg, method_max_diff: str, eps: float) -> (int, float):
+    """
+    Находит достаточное количество участков разбиения для достижения требуемой точности
+
+    :param curve_seg: Объект, содержащий все данные о свойствах кривой
+    :param method_max_diff: Название неэффективного метода
+    :param eps: Заданная точность
+    :return: Необходимое число участков разбиения
+    """
     n = 1
     current_integral_value = integrate_approx(curve_seg, n, approximation_methods[method_max_diff])
     while abs(current_integral_value -
@@ -69,7 +109,7 @@ def compute_ndivisions(curve_seg: CurveSeg, method_max_diff: str, eps: float) ->
               ) > eps:
         n *= 2
         current_integral_value = next_integral_value
-
+    print(current_integral_value - next_integral_value)
     return n, next_integral_value
 
 
@@ -90,6 +130,7 @@ def main():
     while (eps := get_number(float, 'Введите ожидаемую точность: ')) <= 0:
         print('Точность должна быть положительной')
 
+    # Нахождение достаточного количества участков разбиения
     ndivisions, integ_value = compute_ndivisions(curve_seg, method_max_diff, eps)
     integral_to_eps = {f'{method_max_diff}, количество участков: {ndivisions}': [integ_value]}
     integral_to_eps_diffs = compute_differences(integral_to_eps, integral_exact)
@@ -111,5 +152,5 @@ def main():
     ]
 
     print()
-    display_table(table_first, runs)
-    display_table(table_second, 1)
+    display_table(table_first, columns=runs)
+    display_table(table_second, columns=1)
